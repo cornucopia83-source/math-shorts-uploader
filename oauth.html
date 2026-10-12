@@ -1,0 +1,33 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex">
+<title>인증 코드</title><link rel="stylesheet" href="style.css">
+<style>
+#code{font:15px/1.5 ui-monospace,Menlo,monospace;word-break:break-all;background:var(--line);padding:14px;border-radius:10px;margin:16px 0;user-select:all}
+button{font:600 18px/1 inherit;width:100%;padding:16px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer}
+#done{color:var(--muted);font-size:14px;min-height:20px;margin-top:10px}
+</style></head><body><main>
+<h1 id="title">인증 코드</h1>
+<p id="msg">아래 <b>복사</b> 버튼을 누른 뒤, 텔레그램 봇 대화창에 붙여 넣어 보내 주세요.<br><span class="muted">코드는 몇 분 안에 만료됩니다.</span></p>
+<div id="code"></div>
+<button id="copy">복사</button>
+<div id="done"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const code = q.get("code"), err = q.get("error");
+const box = document.getElementById("code");
+if (code) {
+  box.textContent = code;
+} else {
+  document.getElementById("title").textContent = "인증 코드가 없습니다";
+  document.getElementById("msg").textContent = err ? ("Google 응답: " + err + " — 텔레그램의 버튼으로 다시 시도해 주세요.") : "텔레그램의 인증 버튼으로 다시 시도해 주세요.";
+  box.remove(); document.getElementById("copy").remove();
+}
+document.getElementById("copy")?.addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(code); }
+  catch (e) { const r = document.createRange(); r.selectNodeContents(box); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand("copy"); }
+  document.getElementById("done").textContent = "✅ 복사했습니다. 텔레그램에 붙여 넣어 보내 주세요.";
+});
+// 주소창·방문 기록에 코드가 남지 않게
+history.replaceState(null, "", location.pathname);
+</script>
+</main></body></html>
